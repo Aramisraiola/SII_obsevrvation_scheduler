@@ -7,8 +7,11 @@ class angle_deg_min_sec:
         self.lat_minutes = lat_minutes
         self.lat_seconds = lat_seconds
 
-    def get_angle_deg(self):
+    def get_angle_deg_min_sec(self):
         return np.array([self.lat_deg, self.lat_minutes, self.lat_seconds])
+
+    def get_angle_deg(self):
+        return self.lat_deg + self.lat_minutes/60 + self.lat_seconds/3600
 
     def get_angle_radians(self):
         deg_to_rad = np.pi / 180
@@ -25,6 +28,10 @@ class baseline:
         if not isinstance(latitude, angle_deg_min_sec):
             raise ValueError("Input latitude must be of the form: deg° min' sec'', i.e. it must be an instance from "
                              "class angle_deg_min_sec")
+
+        elif latitude.get_angle_deg()>90:
+            raise ValueError("Input latitude must be smaller than 90 degrees")
+
         else:
             self.latitude = latitude
             self.latitude_radians = latitude.get_angle_radians()
