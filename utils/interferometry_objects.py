@@ -29,7 +29,7 @@ class baseline:
             raise ValueError("Input latitude must be of the form: deg° min' sec'', i.e. it must be an instance from "
                              "class angle_deg_min_sec")
 
-        elif latitude.get_angle_deg()>90:
+        elif latitude.get_angle_deg() > 90:
             raise ValueError("Input latitude must be smaller than 90 degrees")
 
         else:

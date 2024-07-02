@@ -97,3 +97,45 @@ def plot_telescopes_delay(spatial_freq, ax=None, color='tab:blue', baseline_name
     ax.legend()
 
     return ax
+
+def plot_spatial_uv_plane_image(spatial_freq, source_image, fov_extent, show_full_observation=False, fix_source=False, ax=None, plot_legend=True, baseline_name=''):
+    if not isinstance(spatial_freq, spatial_frequency):
+        raise ValueError('The spatial_frequencies argument must be a spatial_frequency class instance')
+
+    if ax is None:
+        fig,ax=plt.subplots()
+
+    num_existing_plots = len(ax.lines)
+    baseline_color = plt.cm.viridis(num_existing_plots / 5)
+
+    ax.imshow(source_image, extent=[-fov_extent / 2, fov_extent / 2, -fov_extent / 2, fov_extent / 2], cmap='inferno')
+    ax.plot(spatial_freq.u(), spatial_freq.v(), label='Baseline {}'.format(baseline_name),
+            color=baseline_color, linewidth=2)
+    ax.plot(-spatial_freq.u(), -spatial_freq.v(), color='yellow', linewidth=2)
+    print(spatial_freq.u())
+
+    if show_full_observation:
+        theta = np.linspace(0, 2 * np.pi, 100)
+        x_real = spatial_freq.minor_axis_spatial() * np.cos(theta)
+        y_real = spatial_freq.ellipse_center_spatial() + spatial_freq.major_axis_spatial() * np.sin(theta)
+
+        x_im = spatial_freq.minor_axis_spatial() * np.cos(theta)
+        y_im = - spatial_freq.ellipse_center_spatial() + spatial_freq.major_axis_spatial() * np.sin(theta)
+
+        ax.plot(x_real, y_real, linestyle='--', color=baseline_color)
+        ax.plot(x_im, y_im, linestyle='--', color=baseline_color)
+
+    if fix_source:
+        ax.set_xlim(-fov_extent / 2, fov_extent / 2)
+        ax.set_ylim(-fov_extent / 2,fov_extent / 2)
+
+    ax.set_xlabel('u  [m]')
+    ax.set_ylabel('v  [m]')
+    ax.set_title('Observation projected baseline')
+
+    if plot_legend:
+        ax.legend()
+
+    plt.tight_layout()
+    plt.show()
+    return ax
